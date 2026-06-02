@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MathViz — Graph Explorer</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/13.1.1/math.min.js"></script>
+</head>
+<body>
+
+<div class="app-wrapper">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <img src="images/Maths.png" alt="MathViz" class="logo-icon-img">
+        <span class="logo-text">CurveCraft</span>
+      </div>
+      <span class="tagline">Graph Explorer</span>
+    </div>
+    <div class="header-right">
+      <div class="mode-tabs">
+        <button class="mode-tab active" data-mode="2d">2D Graphs</button>
+        <button class="mode-tab" data-mode="3d">3D Graphs</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-layout">
+
+    <!-- ====== LEFT PANEL ====== -->
+    <aside class="left-panel">
+
+      <div class="panel-scroll">
+
+        <!-- 2D Panel -->
+        <div id="panel2d" class="panel-section active-panel">
+
+          <div class="section-header">
+            <span class="section-badge">2D</span>
+            <h2>Curve Builder</h2>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Quick Library</label>
+            <select id="curveLibrary2d" class="styled-select">
+              <option value="">— pick a preset —</option>
+              <optgroup label="📐 School Level">
+                <option value="line">Straight Line</option>
+                <option value="parabola">Parabola</option>
+                <option value="invertedParabola">Inverted Parabola</option>
+                <option value="cubic">Cubic Curve</option>
+                <option value="absolute">Absolute Value</option>
+                <option value="squareRoot">Square Root</option>
+                <option value="reciprocal">Reciprocal (1/x)</option>
+              </optgroup>
+              <optgroup label="📈 Exponential & Log">
+                <option value="exponential">Exponential e^x</option>
+                <option value="logarithm">Natural Log ln(x)</option>
+                <option value="log10">Log Base 10</option>
+                <option value="logistic">Logistic (Sigmoid)</option>
+              </optgroup>
+              <optgroup label="🌊 Trigonometry">
+                <option value="sine">Sine Wave</option>
+                <option value="cosine">Cosine Wave</option>
+                <option value="tangent">Tangent</option>
+                <option value="sineSquared">sin²(x)</option>
+                <option value="dampedSine">Damped Sine</option>
+              </optgroup>
+              <optgroup label="⭕ Conic Sections">
+                <option value="circle">Circle</option>
+                <option value="ellipse">Ellipse</option>
+                <option value="hyperbola">Hyperbola</option>
+                <option value="parabolaHoriz">Horizontal Parabola</option>
+              </optgroup>
+              <optgroup label="✨ Advanced / Decorative">
+                <option value="spiral">Archimedean Spiral</option>
+                <option value="heart">Heart Curve ❤</option>
+                <option value="rose4">Rose Curve (n=4)</option>
+                <option value="rose6">Rose Curve (n=6)</option>
+                <option value="lissajous">Lissajous Curve</option>
+                <option value="astroid">Astroid</option>
+                <option value="cycloid">Cycloid</option>
+                <option value="epitrochoid">Epitrochoid</option>
+                <option value="hypotrochoid">Hypotrochoid</option>
+                <option value="butterfly">Butterfly Curve</option>
+                <option value="limaçon">Limaçon</option>
+                <option value="cardioid">Cardioid</option>
+                <option value="lemniscate">Lemniscate ∞</option>
+                <option value="fourier3">Fourier Approx (Square Wave)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Equation Mode</label>
+            <div class="radio-group">
+              <label class="radio-opt">
+                <input type="radio" name="eqMode" value="normal" checked>
+                <span>y = f(x)</span>
+              </label>
+              <label class="radio-opt">
+                <input type="radio" name="eqMode" value="parametric">
+                <span>Parametric x(t), y(t)</span>
+              </label>
+              <label class="radio-opt">
+                <input type="radio" name="eqMode" value="polar">
+                <span>Polar r(θ)</span>
+              </label>
+              <label class="radio-opt">
+                <input type="radio" name="eqMode" value="implicit">
+                <span>Implicit f(x,y)=0</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Normal Equation -->
+          <div id="normalBox" class="eq-inputs">
+            <div class="field-group">
+              <label class="field-label">y = f(x)</label>
+              <input type="text" id="equationInput" class="styled-input" value="x^2" placeholder="x^2, sin(x), x^3-4*x …">
+            </div>
+          </div>
+
+          <!-- Parametric -->
+          <div id="parametricBox" class="eq-inputs hidden">
+            <div class="field-group">
+              <label class="field-label">x(t)</label>
+              <input type="text" id="xParam" class="styled-input" value="16*sin(t)^3" placeholder="16*sin(t)^3">
+            </div>
+            <div class="field-group">
+              <label class="field-label">y(t)</label>
+              <input type="text" id="yParam" class="styled-input" value="13*cos(t)-5*cos(2*t)-2*cos(3*t)-cos(4*t)" placeholder="13*cos(t)-5*cos(2*t)…">
+            </div>
+          </div>
+
+          <!-- Polar -->
+          <div id="polarBox" class="eq-inputs hidden">
+            <div class="field-group">
+              <label class="field-label">r(θ)</label>
+              <input type="text" id="polarInput" class="styled-input" value="1 + cos(theta)" placeholder="1 + cos(theta)">
+            </div>
+          </div>
+
+          <!-- Implicit -->
+          <div id="implicitBox" class="eq-inputs hidden">
+            <div class="field-group">
+              <label class="field-label">f(x,y) = 0</label>
+              <input type="text" id="implicitInput" class="styled-input" value="x^2 + y^2 - 25" placeholder="x^2 + y^2 - 25">
+              <p class="hint-text">Example: x²+y²−25 draws a circle of radius 5</p>
+            </div>
+          </div>
+
+          <!-- Range Controls -->
+          <div class="range-grid">
+            <div class="field-group">
+              <label class="field-label">x min</label>
+              <input type="number" id="xMin2d" class="styled-input small" value="-10">
+            </div>
+            <div class="field-group">
+              <label class="field-label">x max</label>
+              <input type="number" id="xMax2d" class="styled-input small" value="10">
+            </div>
+            <div class="field-group">
+              <label class="field-label">y min</label>
+              <input type="number" id="yMin2d" class="styled-input small" value="-10">
+            </div>
+            <div class="field-group">
+              <label class="field-label">y max</label>
+              <input type="number" id="yMax2d" class="styled-input small" value="10">
+            </div>
+          </div>
+
+          <!-- Color & Style -->
+          <div class="style-row">
+            <div class="field-group">
+              <label class="field-label">Color</label>
+              <input type="color" id="lineColor2d" class="color-picker" value="#5b5fc7">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Line Width</label>
+              <input type="range" id="lineWidth2d" min="1" max="6" value="2" class="styled-range">
+              <span id="lineWidthVal" class="range-val">2</span>
+            </div>
+          </div>
+
+          <!-- Multi-curve -->
+          <div class="field-group">
+            <label class="field-label">Add Another Curve</label>
+            <div class="multi-curve-list" id="extraCurves"></div>
+            <button class="btn-ghost" id="addCurveBtn">+ Add curve</button>
+          </div>
+
+          <p class="error-msg" id="err2d"></p>
+
+          <!-- Quick Examples -->
+          <div class="examples-box">
+            <p class="examples-title">✦ Quick Examples</p>
+            <div class="chips">
+              <span class="chip" data-eq="x^2">x²</span>
+              <span class="chip" data-eq="sin(x)">sin(x)</span>
+              <span class="chip" data-eq="x^3-4*x">x³−4x</span>
+              <span class="chip" data-eq="abs(x)">|x|</span>
+              <span class="chip" data-eq="sqrt(x)">√x</span>
+              <span class="chip" data-eq="exp(x)">eˣ</span>
+              <span class="chip" data-eq="log(x)">ln(x)</span>
+              <span class="chip" data-eq="tan(x)">tan(x)</span>
+              <span class="chip" data-eq="1/x">1/x</span>
+              <span class="chip" data-eq="sin(x)/x">sinc(x)</span>
+              <span class="chip" data-eq="floor(x)">floor(x)</span>
+              <span class="chip" data-eq="x*sin(x)">x·sin(x)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3D Panel -->
+        <div id="panel3d" class="panel-section">
+
+          <div class="section-header">
+            <span class="section-badge badge-3d">3D</span>
+            <h2>Surface Builder</h2>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Quick Library</label>
+            <select id="curveLibrary3d" class="styled-select">
+              <option value="">— pick a preset —</option>
+              <optgroup label="📦 Basic Surfaces">
+                <option value="paraboloid">Paraboloid z=x²+y²</option>
+                <option value="saddlePoint">Saddle Point z=x²−y²</option>
+                <option value="plane">Tilted Plane</option>
+                <option value="cone">Cone z=√(x²+y²)</option>
+                <option value="sinc2d">Sinc 2D z=sin(r)/r</option>
+              </optgroup>
+              <optgroup label="🌊 Wave Surfaces">
+                <option value="ripple">Ripple z=sin(√(x²+y²))</option>
+                <option value="sineProduct">Sine Product z=sin(x)·cos(y)</option>
+                <option value="waveMesh">Wave Mesh</option>
+                <option value="doubleSine">Double Sine</option>
+              </optgroup>
+              <optgroup label="🍩 Special Shapes">
+                <option value="torus">Torus</option>
+                <option value="sphere">Sphere</option>
+                <option value="mobius">Möbius Strip</option>
+                <option value="trefoilKnot">Trefoil Knot</option>
+                <option value="kleinBottle">Klein-like Surface</option>
+                <option value="seashell">Seashell</option>
+              </optgroup>
+              <optgroup label="📊 Data-like">
+                <option value="gaussian">Gaussian Bell z=e^(-(x²+y²))</option>
+                <option value="bimodal">Bimodal Distribution</option>
+                <option value="peaks">Peaks Function</option>
+                <option value="saddle2">Monkey Saddle</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Surface Type</label>
+            <div class="radio-group">
+              <label class="radio-opt">
+                <input type="radio" name="surfMode" value="surface" checked>
+                <span>z = f(x,y)</span>
+              </label>
+              <label class="radio-opt">
+                <input type="radio" name="surfMode" value="parametric3d">
+                <span>Parametric x,y,z(u,v)</span>
+              </label>
+              <label class="radio-opt">
+                <input type="radio" name="surfMode" value="scatter3d">
+                <span>3D Scatter / Curve</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- z=f(x,y) -->
+          <div id="surfaceBox" class="eq-inputs">
+            <div class="field-group">
+              <label class="field-label">z = f(x, y)</label>
+              <input type="text" id="zEquation" class="styled-input" value="sin(sqrt(x^2+y^2))" placeholder="sin(sqrt(x^2+y^2))">
+            </div>
+          </div>
+
+          <!-- Parametric 3D -->
+          <div id="param3dBox" class="eq-inputs hidden">
+            <div class="field-group">
+              <label class="field-label">x(u,v)</label>
+              <input type="text" id="xParam3d" class="styled-input" value="(2+cos(v))*cos(u)">
+            </div>
+            <div class="field-group">
+              <label class="field-label">y(u,v)</label>
+              <input type="text" id="yParam3d" class="styled-input" value="(2+cos(v))*sin(u)">
+            </div>
+            <div class="field-group">
+              <label class="field-label">z(u,v)</label>
+              <input type="text" id="zParam3d" class="styled-input" value="sin(v)">
+            </div>
+            <div class="range-grid">
+              <div class="field-group">
+                <label class="field-label">u min</label>
+                <input type="number" id="uMin" class="styled-input small" value="0">
+              </div>
+              <div class="field-group">
+                <label class="field-label">u max</label>
+                <input type="number" id="uMax" class="styled-input small" value="6.28">
+              </div>
+              <div class="field-group">
+                <label class="field-label">v min</label>
+                <input type="number" id="vMin" class="styled-input small" value="0">
+              </div>
+              <div class="field-group">
+                <label class="field-label">v max</label>
+                <input type="number" id="vMax" class="styled-input small" value="6.28">
+              </div>
+            </div>
+          </div>
+
+          <!-- Scatter 3D -->
+          <div id="scatter3dBox" class="eq-inputs hidden">
+            <div class="field-group">
+              <label class="field-label">x(t)</label>
+              <input type="text" id="xScatter3d" class="styled-input" value="sin(t)*t/10">
+            </div>
+            <div class="field-group">
+              <label class="field-label">y(t)</label>
+              <input type="text" id="yScatter3d" class="styled-input" value="cos(t)*t/10">
+            </div>
+            <div class="field-group">
+              <label class="field-label">z(t)</label>
+              <input type="text" id="zScatter3d" class="styled-input" value="t/10">
+            </div>
+            <div class="range-grid">
+              <div class="field-group">
+                <label class="field-label">t min</label>
+                <input type="number" id="tMin3d" class="styled-input small" value="-30">
+              </div>
+              <div class="field-group">
+                <label class="field-label">t max</label>
+                <input type="number" id="tMax3d" class="styled-input small" value="30">
+              </div>
+            </div>
+          </div>
+
+          <!-- 3D Range -->
+          <div id="surfRangeBox" class="range-grid">
+            <div class="field-group">
+              <label class="field-label">x min</label>
+              <input type="number" id="xMin3d" class="styled-input small" value="-5">
+            </div>
+            <div class="field-group">
+              <label class="field-label">x max</label>
+              <input type="number" id="xMax3d" class="styled-input small" value="5">
+            </div>
+            <div class="field-group">
+              <label class="field-label">y min</label>
+              <input type="number" id="yMin3d" class="styled-input small" value="-5">
+            </div>
+            <div class="field-group">
+              <label class="field-label">y max</label>
+              <input type="number" id="yMax3d" class="styled-input small" value="5">
+            </div>
+          </div>
+
+          <!-- 3D Style -->
+          <div class="field-group">
+            <label class="field-label">Color Scale</label>
+            <select id="colorScale3d" class="styled-select">
+              <option value="Viridis">Viridis</option>
+              <option value="Plasma">Plasma</option>
+              <option value="Inferno">Inferno</option>
+              <option value="Turbo">Turbo</option>
+              <option value="Rainbow">Rainbow</option>
+              <option value="Cividis">Cividis</option>
+              <option value="Hot">Hot</option>
+              <option value="Cool">Cool</option>
+              <option value="Electric">Electric</option>
+              <option value="Portland">Portland</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Surface Opacity</label>
+            <input type="range" id="opacity3d" min="0.1" max="1" step="0.05" value="0.9" class="styled-range">
+            <span id="opacityVal" class="range-val">0.9</span>
+          </div>
+
+          <div class="toggle-row">
+            <label class="toggle-label">
+              <input type="checkbox" id="showWireframe" class="toggle-cb">
+              <span class="toggle-track"></span>
+              Show Wireframe
+            </label>
+            <label class="toggle-label">
+              <input type="checkbox" id="showContour" class="toggle-cb">
+              <span class="toggle-track"></span>
+              Contour Lines
+            </label>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Resolution (grid steps)</label>
+            <input type="range" id="resolution3d" min="20" max="100" step="5" value="50" class="styled-range">
+            <span id="resVal" class="range-val">50</span>
+          </div>
+
+          <p class="error-msg" id="err3d"></p>
+
+          <!-- 3D Quick Chips -->
+          <div class="examples-box">
+            <p class="examples-title">✦ Quick Examples</p>
+            <div class="chips">
+              <span class="chip chip-3d" data-eq="x^2+y^2">x²+y²</span>
+              <span class="chip chip-3d" data-eq="sin(sqrt(x^2+y^2))">ripple</span>
+              <span class="chip chip-3d" data-eq="x^2-y^2">saddle</span>
+              <span class="chip chip-3d" data-eq="exp(-(x^2+y^2))">gaussian</span>
+              <span class="chip chip-3d" data-eq="sin(x)*cos(y)">waves</span>
+              <span class="chip chip-3d" data-eq="cos(x^2+y^2)">rings</span>
+              <span class="chip chip-3d" data-eq="sin(x)+sin(y)">tiling</span>
+              <span class="chip chip-3d" data-eq="abs(x)+abs(y)">diamond</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end panel-scroll -->
+    </aside>
+
+    <!-- ====== GRAPH AREA ====== -->
+    <main class="graph-area">
+      <div class="graph-toolbar">
+        <div class="toolbar-left">
+          <span id="graphTitle" class="graph-title-text">y = x²</span>
+        </div>
+        <div class="toolbar-right">
+          <button class="icon-btn" id="downloadBtn" title="Download PNG">⬇ Save</button>
+          <button class="icon-btn" id="resetBtn" title="Reset View">⟳ Reset</button>
+          <button class="icon-btn" id="fullscreenBtn" title="Fullscreen">⛶ Full</button>
+        </div>
+      </div>
+      <div id="graphCanvas"></div>
+      <div id="graphPlaceholder" class="graph-placeholder">
+        <div class="placeholder-inner">
+          <span class="placeholder-icon">∫</span>
+          <p>Configure your equation and press <strong>Draw Graph</strong></p>
+          <p class="placeholder-sub">Supports 2D &amp; 3D — Normal, Parametric, Polar, Implicit, Surfaces</p>
+        </div>
+      </div>
+    </main>
+
+  </div><!-- end main-layout -->
+
+</div><!-- end app-wrapper -->
+
+<script src="script.js"></script>
+</body>
+</html>
